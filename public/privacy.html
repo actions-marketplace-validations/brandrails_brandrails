@@ -1,39 +1,39 @@
 <!doctype html>
 <html lang="en">
 <head>
+<title>Brandrails privacy policy</title>
+<meta name="description" content="What the hosted Brandrails MCP server receives, why, and for how long.">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brandrails privacy policy</title>
-<style>
-  :root { color-scheme: light dark; --fg: #1c1917; --muted: #57534e; --bg: #ffffff; --line: #e7e5e4; }
-  @media (prefers-color-scheme: dark) { :root { --fg: #f5f5f4; --muted: #a8a29e; --bg: #0c0a09; --line: #292524; } }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
-  main { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
-  h1 { font-size: 1.75rem; margin: 0 0 .25rem; }
-  h2 { font-size: 1.125rem; margin: 2rem 0 .5rem; }
-  p, li { color: var(--fg); }
-  .meta { color: var(--muted); margin-bottom: 2rem; }
-  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
-  th, td { text-align: left; vertical-align: top; padding: .5rem; border-bottom: 1px solid var(--line); }
-  a { color: inherit; }
-</style>
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="https://www.holisy.pro/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aleo:wght@400;700&display=swap">
+<link rel="stylesheet" href="/site.css">
 </head>
 <body>
-<main>
+<div class="wrap">
+<header class="site-header">
+  <a class="brand" href="/"><svg viewBox="0 0 283.32 515.51" aria-hidden="true" fill="currentColor"><path d="M252.74,219.17l-191.54,32.28V117.79c0-16.9-13.7-30.6-30.59-30.6S0,100.89,0,117.79v164.28c.02,16.92,13.7,30.6,30.61,30.6l191.52-32.28v204.51c0,16.9,13.7,30.6,30.61,30.6s30.59-13.7,30.59-30.6v-235.11c0-16.92-13.7-30.62-30.59-30.62Z"/><ellipse cx="30.62" cy="30.4" rx="30.33" ry="30.35"/><polygon points="283.17 0 221.59 17.78 221.7 118.1 122.83 137.23 122.83 195.96 283.18 168.69 283.17 0"/><polygon points="160.54 335.73 0 363.01 0 515.51 61.54 497.73 61.66 413.6 160.54 394.47 160.54 335.73"/></svg><span>Brandrails</span></a>
+  <nav class="nav" aria-label="Main"><a href="/#use">Use it</a><a href="https://github.com/matejholek/brandrails">GitHub</a><a href="https://www.npmjs.com/package/brandrails">npm</a></nav>
+</header>
+<main class="prose">
 <h1>Brandrails privacy policy</h1>
-<p class="meta">Last updated: 18 November 2026</p>
+<p class="muted">Last updated: 18 November 2026</p>
 
-<p>This policy covers the hosted Brandrails MCP server at <code>mcp.holisy.pro</code>, which the Brandrails app in ChatGPT and other AI assistants call. The open-source CLI, GitHub Action and local MCP server run on your own machine and send nothing to us.</p>
+<p>This policy covers the hosted Brandrails MCP server at <code>brandrails.holisy.pro</code>, which the Brandrails app in ChatGPT and other AI assistants call. The open-source CLI, GitHub Action and local MCP server run on your own machine and send nothing to us.</p>
 
 <h2>Who is responsible</h2>
 <p>Matej Holek, sole trader (Holisy), Bratislava, Slovakia. Contact: <a href="mailto:matej@holisy.pro">matej@holisy.pro</a>.</p>
 
 <h2>What the service receives</h2>
-<table>
+<div class="table-scroll"><table>
   <tr><th>Data</th><th>Why</th><th>How long</th></tr>
   <tr><td>Content you or your assistant send to a tool: stylesheets, a design tokens file, code or a git diff, and their file paths</td><td>To extract tokens, generate rules files or check for hard-coded values, and return the result</td><td>Only while the request runs. Files are written to a temporary folder that is deleted when the request ends. Nothing is stored afterwards.</td></tr>
   <tr><td>Technical request data: IP address, time, URL path, response status</td><td>To run and protect the service</td><td>Kept by our hosting provider in its platform logs for a short period under its own retention settings. We do not copy or analyse them.</td></tr>
-</table>
+</table></div>
 <p>The service does not ask for your name, email or account, sets no cookies and uses no analytics or advertising. Please do not send secrets or personal data in the files you check; the tools do not need them.</p>
 
 <h2>Who receives it</h2>
@@ -55,5 +55,10 @@
 <h2>Changes</h2>
 <p>We will update the date above when this policy changes. The source of this page is public at <a href="https://github.com/matejholek/brandrails">github.com/matejholek/brandrails</a>.</p>
 </main>
+<footer class="site-footer small">
+  <p>Made by <a href="https://www.holisy.pro/">Holisy Design</a> · Matej Holek, Bratislava</p>
+  <p><a href="/privacy">Privacy</a> · <a href="https://github.com/matejholek/brandrails/blob/main/LICENSE">MIT licence</a></p>
+</footer>
+</div>
 </body>
 </html>
