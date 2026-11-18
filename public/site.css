@@ -141,3 +141,12 @@ th { font: 700 1rem/1.3 var(--font-display); }
 
 .prose { max-width: 46rem; }
 .prose h2 { font-size: clamp(1.35rem, 1.2rem + 0.8vw, 1.95rem); margin-top: var(--space-12); }
+
+.consent {
+  position: fixed; z-index: 10;
+  left: var(--page-padding); right: var(--page-padding); bottom: var(--page-padding);
+  max-width: 40rem; margin-left: auto;
+  padding: var(--space-6);
+}
+.consent p { margin-bottom: var(--space-4); }
+.consent .row { gap: var(--space-4); }
