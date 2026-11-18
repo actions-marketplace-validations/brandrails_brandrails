@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brandrails privacy policy</title>
+<style>
+  :root { color-scheme: light dark; --fg: #1c1917; --muted: #57534e; --bg: #ffffff; --line: #e7e5e4; }
+  @media (prefers-color-scheme: dark) { :root { --fg: #f5f5f4; --muted: #a8a29e; --bg: #0c0a09; --line: #292524; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+  main { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+  h1 { font-size: 1.75rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.125rem; margin: 2rem 0 .5rem; }
+  p, li { color: var(--fg); }
+  .meta { color: var(--muted); margin-bottom: 2rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; vertical-align: top; padding: .5rem; border-bottom: 1px solid var(--line); }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+<h1>Brandrails privacy policy</h1>
+<p class="meta">Last updated: 18 November 2026</p>
+
+<p>This policy covers the hosted Brandrails MCP server at <code>mcp.holisy.pro</code>, which the Brandrails app in ChatGPT and other AI assistants call. The open-source CLI, GitHub Action and local MCP server run on your own machine and send nothing to us.</p>
+
+<h2>Who is responsible</h2>
+<p>Matej Holek, sole trader (Holisy), Bratislava, Slovakia. Contact: <a href="mailto:matej@holisy.pro">matej@holisy.pro</a>.</p>
+
+<h2>What the service receives</h2>
+<table>
+  <tr><th>Data</th><th>Why</th><th>How long</th></tr>
+  <tr><td>Content you or your assistant send to a tool: stylesheets, a design tokens file, code or a git diff, and their file paths</td><td>To extract tokens, generate rules files or check for hard-coded values, and return the result</td><td>Only while the request runs. Files are written to a temporary folder that is deleted when the request ends. Nothing is stored afterwards.</td></tr>
+  <tr><td>Technical request data: IP address, time, URL path, response status</td><td>To run and protect the service</td><td>Kept by our hosting provider in its platform logs for a short period under its own retention settings. We do not copy or analyse them.</td></tr>
+</table>
+<p>The service does not ask for your name, email or account, sets no cookies and uses no analytics or advertising. Please do not send secrets or personal data in the files you check; the tools do not need them.</p>
+
+<h2>Who receives it</h2>
+<ul>
+  <li><strong>Vercel Inc.</strong> hosts the server and processes the request on our behalf.</li>
+  <li><strong>The AI assistant you use</strong> (for example OpenAI for ChatGPT) sends your request to us and receives the result. Its handling of your conversation is covered by its own privacy policy.</li>
+</ul>
+<p>We do not sell or share the data with anyone else.</p>
+
+<h2>Legal basis</h2>
+<p>Processing is necessary to provide the service you request (GDPR Article 6(1)(b)) and, for technical logs, our legitimate interest in running a secure service (Article 6(1)(f)).</p>
+
+<h2>Your rights and controls</h2>
+<p>Because we keep no content and no accounts, there is usually nothing to access or delete. You can stop using the service at any time by disconnecting the app in your assistant. You can contact us about access, deletion, objection or any other GDPR right at the address above, and you can complain to the Slovak data protection authority (Úrad na ochranu osobných údajov SR).</p>
+
+<h2>Children</h2>
+<p>The service is a developer tool and is not directed at children.</p>
+
+<h2>Changes</h2>
+<p>We will update the date above when this policy changes. The source of this page is public at <a href="https://github.com/matejholek/brandrails">github.com/matejholek/brandrails</a>.</p>
+</main>
+</body>
+</html>
