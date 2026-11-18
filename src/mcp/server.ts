@@ -10,7 +10,14 @@ import { CONTENT_TOOLS, LIMITS, localTools, type Tool } from "./tools.js";
  * Only the tools capability is offered.
  */
 
-const VERSION = (JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8")) as { version: string }).version;
+const VERSION = (() => {
+  try {
+    return (JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8")) as { version: string }).version;
+  } catch {
+    // Bundled by a serverless host without package.json next to it.
+    return "unknown";
+  }
+})();
 const PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
 
 const INSTRUCTIONS = `Brandrails keeps AI-written UI on a project's design system.
@@ -19,14 +26,14 @@ const INSTRUCTIONS = `Brandrails keeps AI-written UI on a project's design syste
 3. check_drift: send a git diff or files to find hard-coded colours and px values that should use tokens.
 Use token names from tokens.json in any UI code you write.`;
 
-interface Request {
+interface RpcRequest {
   jsonrpc: "2.0";
   id?: string | number | null;
   method: string;
   params?: Record<string, unknown>;
 }
 
-type Response = { jsonrpc: "2.0"; id: string | number | null } & ({ result: unknown } | { error: { code: number; message: string } });
+type RpcResponse = { jsonrpc: "2.0"; id: string | number | null } & ({ result: unknown } | { error: { code: number; message: string } });
 
 export function createHandler(tools: Tool[]) {
   const byName = new Map(tools.map((t) => [t.name, t]));
@@ -44,7 +51,7 @@ export function createHandler(tools: Tool[]) {
     }
   }
 
-  function dispatch(req: Request): unknown {
+  function dispatch(req: RpcRequest): unknown {
     switch (req.method) {
       case "initialize": {
         const asked = String(req.params?.protocolVersion ?? "");
@@ -76,10 +83,10 @@ export function createHandler(tools: Tool[]) {
   }
 
   /** Handles one JSON-RPC message; returns undefined for notifications. */
-  return function handle(message: unknown): Response | undefined {
-    const req = message as Request;
+  return function handle(message: unknown): RpcResponse | undefined {
+    const req = message as RpcRequest;
     if (!req || typeof req !== "object" || req.jsonrpc !== "2.0" || typeof req.method !== "string") {
-      return { jsonrpc: "2.0", id: (req as Request)?.id ?? null, error: { code: -32600, message: "Invalid request" } };
+      return { jsonrpc: "2.0", id: (req as RpcRequest)?.id ?? null, error: { code: -32600, message: "Invalid request" } };
     }
     const isNotification = req.id === undefined;
     try {
@@ -93,13 +100,13 @@ export function createHandler(tools: Tool[]) {
   };
 }
 
-const PARSE_ERROR: Response = { jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } };
+const PARSE_ERROR: RpcResponse = { jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } };
 
 /** Newline-delimited JSON-RPC on stdin/stdout. Offers the local repository tools too. */
 export function serveStdio(cwd = process.cwd(), input: Readable = process.stdin, output: Writable = process.stdout): void {
   const handle = createHandler([...CONTENT_TOOLS, ...localTools(cwd)]);
   const rl = createInterface({ input, crlfDelay: Infinity });
-  const send = (r: Response | undefined) => r && output.write(JSON.stringify(r) + "\n");
+  const send = (r: RpcResponse | undefined) => r && output.write(JSON.stringify(r) + "\n");
   rl.on("line", (line) => {
     if (!line.trim()) return;
     let message: unknown;
@@ -120,30 +127,37 @@ export interface HttpOptions {
   token?: string;
 }
 
-/** Stateless Streamable HTTP at POST /mcp. Content tools only: a hosted server must not touch its own disk. */
-export function serveHttp({ port, host, token }: HttpOptions): Server {
+interface HttpReply {
+  status: number;
+  headers: Record<string, string>;
+  body?: string;
+}
+
+class TooLarge extends Error {}
+
+/**
+ * Stateless Streamable HTTP, shared by the Node server and the fetch handler. Content tools only:
+ * a hosted server must not touch its own disk.
+ */
+function httpResponder(token?: string) {
   const handle = createHandler(CONTENT_TOOLS);
-  const server = createServer(async (req, res) => {
-    const url = new URL(req.url ?? "/", "http://localhost");
-    const json = (status: number, body: unknown) => {
-      res.writeHead(status, { "content-type": "application/json" }).end(JSON.stringify(body));
-    };
-    if (url.pathname === "/health") return json(200, { ok: true, version: VERSION });
-    if (url.pathname !== "/mcp") return json(404, { error: "Not found. The MCP endpoint is /mcp." });
-    if (token && req.headers.authorization !== `Bearer ${token}`) {
-      res.setHeader("www-authenticate", "Bearer");
-      return json(401, { error: "Unauthorized" });
-    }
+  const json = (status: number, body: unknown, headers: Record<string, string> = {}): HttpReply => ({
+    status,
+    headers: { "content-type": "application/json", ...headers },
+    body: JSON.stringify(body),
+  });
+  return async (method: string, path: string, authorization: string | null | undefined, readBody: () => Promise<string>): Promise<HttpReply> => {
+    if (path === "/health") return json(200, { ok: true, version: VERSION });
+    if (path !== "/mcp") return json(404, { error: "Not found. The MCP endpoint is /mcp." });
+    if (token && authorization !== `Bearer ${token}`) return json(401, { error: "Unauthorized" }, { "www-authenticate": "Bearer" });
     // Stateless: no server-initiated stream and no sessions to end.
-    if (req.method !== "POST") {
-      res.setHeader("allow", "POST");
-      return json(405, { error: "Use POST." });
-    }
+    if (method !== "POST") return json(405, { error: "Use POST." }, { allow: "POST" });
     let body: string;
     try {
-      body = await readBody(req, LIMITS.bytes * 2);
-    } catch {
-      return json(413, { error: "Request too large." });
+      body = await readBody();
+    } catch (error) {
+      if (error instanceof TooLarge) return json(413, { error: "Request too large." });
+      throw error;
     }
     let message: unknown;
     try {
@@ -152,11 +166,41 @@ export function serveHttp({ port, host, token }: HttpOptions): Server {
       return json(400, PARSE_ERROR);
     }
     const responses = (Array.isArray(message) ? message : [message]).map(handle).filter(Boolean);
-    if (!responses.length) return res.writeHead(202).end();
-    json(200, Array.isArray(message) ? responses : responses[0]);
+    if (!responses.length) return { status: 202, headers: {} };
+    return json(200, Array.isArray(message) ? responses : responses[0]);
+  };
+}
+
+const MAX_BODY = LIMITS.bytes * 2;
+
+/** Node HTTP server for `brandrails mcp --http`. */
+export function serveHttp({ port, host, token }: HttpOptions): Server {
+  const respond = httpResponder(token);
+  const server = createServer(async (req, res) => {
+    const path = new URL(req.url ?? "/", "http://localhost").pathname;
+    const reply = await respond(req.method ?? "GET", path, req.headers.authorization, () => readBody(req, MAX_BODY));
+    res.writeHead(reply.status, reply.headers).end(reply.body);
   });
   server.listen(port, host);
   return server;
+}
+
+/**
+ * Web-standard handler for serverless hosts (Vercel, Cloudflare, Deno). `/api/mcp` is treated as `/mcp`
+ * so it works behind a rewrite or without one.
+ */
+export function fetchHandler(token = process.env.BRANDRAILS_MCP_TOKEN || undefined) {
+  const respond = httpResponder(token);
+  return async (request: Request): Promise<Response> => {
+    const path = new URL(request.url).pathname.replace(/^\/api\//, "/").replace(/\/$/, "") || "/";
+    const reply = await respond(request.method, path, request.headers.get("authorization"), async () => {
+      if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY) throw new TooLarge();
+      const text = await request.text();
+      if (Buffer.byteLength(text) > MAX_BODY) throw new TooLarge();
+      return text;
+    });
+    return new Response(reply.body ?? null, { status: reply.status, headers: reply.headers });
+  };
 }
 
 function readBody(req: IncomingMessage, limit: number): Promise<string> {
@@ -167,7 +211,7 @@ function readBody(req: IncomingMessage, limit: number): Promise<string> {
       size += chunk.length;
       if (size <= limit) chunks.push(chunk);
     });
-    req.on("end", () => (size > limit ? reject(new Error("too large")) : resolve(Buffer.concat(chunks).toString("utf8"))));
+    req.on("end", () => (size > limit ? reject(new TooLarge()) : resolve(Buffer.concat(chunks).toString("utf8"))));
     req.on("error", reject);
   });
 }

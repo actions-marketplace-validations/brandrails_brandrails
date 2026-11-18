@@ -90,6 +90,8 @@ BRANDRAILS_MCP_TOKEN=optional-secret npx brandrails mcp --http --host 0.0.0.0 --
 # MCP endpoint: https://<your-host>/mcp   health check: /health
 ```
 
+On **Vercel**, import the repository as a project; `vercel.json` and `api/mcp.ts` serve the same endpoint at `https://<project>.vercel.app/mcp`. Set `BRANDRAILS_MCP_TOKEN` in the project's environment variables to require a token.
+
 The hosted server offers only the three content tools. It holds supplied files in a temporary folder for the length of one call, never reads outside them, and keeps nothing afterwards. Requests are capped at 100 files and 2 MB.
 
 ### CLI

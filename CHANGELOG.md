@@ -4,7 +4,7 @@
 
 ### Added
 
-- `brandrails mcp`: a Model Context Protocol server with no dependencies. Over stdio (Claude Code, Cursor, Codex, Claude Desktop) it offers `extract_tokens`, `generate_rules`, `check_drift`, `generate_in_repo` and `check_repo`. With `--http` it serves stateless Streamable HTTP at `/mcp` for ChatGPT apps and Claude connectors, offering only the three tools that take file contents, so a hosted server never touches its own disk. `BRANDRAILS_MCP_TOKEN` turns on bearer-token auth.
+- `brandrails mcp`: a Model Context Protocol server with no dependencies. Over stdio (Claude Code, Cursor, Codex, Claude Desktop) it offers `extract_tokens`, `generate_rules`, `check_drift`, `generate_in_repo` and `check_repo`. With `--http` it serves stateless Streamable HTTP at `/mcp` for ChatGPT apps and Claude connectors, offering only the three tools that take file contents, so a hosted server never touches its own disk. `BRANDRAILS_MCP_TOKEN` turns on bearer-token auth. `fetchHandler()` serves the same endpoint on serverless hosts; `vercel.json` and `api/mcp.ts` deploy it to Vercel.
 - Claude Code plugin: `.claude-plugin/plugin.json` bundles the MCP server and the skill; the repo is its own marketplace (`claude plugin marketplace add matejholek/brandrails`).
 
 ### Fixed

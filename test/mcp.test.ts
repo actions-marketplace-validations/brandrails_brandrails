@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import type { AddressInfo } from "node:net";
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
-import { createHandler, serveHttp, serveStdio } from "../src/mcp/server.js";
+import { createHandler, fetchHandler, serveHttp, serveStdio } from "../src/mcp/server.js";
 import { CONTENT_TOOLS, localTools } from "../src/mcp/tools.js";
 
 const css = readFileSync(new URL("../examples/react-tailwind/src/index.css", import.meta.url), "utf8");
@@ -113,6 +113,18 @@ describe("transports", () => {
     } finally {
       server.close();
     }
+  });
+
+  it("serves the same protocol as a fetch handler for serverless hosts", async () => {
+    const handle = fetchHandler("secret");
+    const post = (path: string, body: unknown, auth = "Bearer secret") =>
+      handle(new Request(`https://example.com${path}`, { method: "POST", headers: { authorization: auth }, body: JSON.stringify(body) }));
+    expect((await handle(new Request("https://example.com/health"))).status).toBe(200);
+    expect((await post("/mcp", { jsonrpc: "2.0", id: 1, method: "ping" }, "")).status).toBe(401);
+    const list = await (await post("/api/mcp", { jsonrpc: "2.0", id: 2, method: "tools/list" })).json();
+    expect(list.result.tools).toHaveLength(3);
+    const big = await handle(new Request("https://example.com/mcp", { method: "POST", headers: { authorization: "Bearer secret" }, body: "x".repeat(5_000_000) }));
+    expect(big.status).toBe(413);
   });
 
   it("speaks newline-delimited JSON-RPC over stdio", async () => {
