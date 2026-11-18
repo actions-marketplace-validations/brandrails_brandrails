@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+
+- `brandrails mcp`: a Model Context Protocol server with no dependencies. Over stdio (Claude Code, Cursor, Codex, Claude Desktop) it offers `extract_tokens`, `generate_rules`, `check_drift`, `generate_in_repo` and `check_repo`. With `--http` it serves stateless Streamable HTTP at `/mcp` for ChatGPT apps and Claude connectors, offering only the three tools that take file contents, so a hosted server never touches its own disk. `BRANDRAILS_MCP_TOKEN` turns on bearer-token auth. `fetchHandler()` serves the same endpoint on serverless hosts; `vercel.json` and `api/mcp.ts` deploy it to Vercel.
+- Claude Code plugin: `.claude-plugin/plugin.json` bundles the MCP server and the skill; the repo is its own marketplace (`claude plugin marketplace add matejholek/brandrails`).
+
 ### Fixed
 
 - Indented `.sass` files: `@use`, `@forward` and `@import` lines are now followed. They were only matched when they ended in `;`, so partials were skipped and aliases to their variables broke; a later `;` (for example in a data URI) could make the match run across lines. `.scss` is unchanged. Reported in #3.

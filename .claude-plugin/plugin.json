@@ -1,0 +1,17 @@
+{
+  "name": "brandrails",
+  "version": "0.4.0",
+  "description": "Keep AI coding agents on your design system: extract a DTCG tokens.json from your stylesheets, generate rules files for Claude Code, Cursor, Copilot and Figma Make, and check changes for hard-coded colours and px values.",
+  "author": { "name": "Matej Holek" },
+  "homepage": "https://github.com/matejholek/brandrails",
+  "repository": "https://github.com/matejholek/brandrails",
+  "license": "MIT",
+  "keywords": ["design-tokens", "dtcg", "design-system", "mcp"],
+  "skills": "./skill/",
+  "mcpServers": {
+    "brandrails": {
+      "command": "npx",
+      "args": ["-y", "brandrails@^0.4.0", "mcp"]
+    }
+  }
+}

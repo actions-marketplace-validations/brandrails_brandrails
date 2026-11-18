@@ -4,7 +4,7 @@
 
 Brandrails turns the design decisions already in your codebase into one `tokens.json` ([DTCG format](https://www.designtokens.org/)), generates design rules for every AI tool your team uses, and flags drift on every pull request.
 
-> Status: v0.3, early. Feedback and issues welcome. See the [changelog](CHANGELOG.md).
+> Status: v0.4, early. Feedback and issues welcome. See the [changelog](CHANGELOG.md).
 
 ## What it does
 
@@ -20,7 +20,7 @@ Brandrails turns the design decisions already in your codebase into one `tokens.
    Files agents load on every request (AGENTS.md, Copilot) only list token names and point to `design/tokens.md`, so a big design system doesn't eat the context window. The Cursor rule attaches only when a UI file is involved. Pass `--full` to put full tables everywhere.
 4. **Checks** each PR for hard-coded colours and px values, and for rules files that are stale compared with `tokens.json`.
 
-## Two ways to use it
+## Ways to use it
 
 ### As an agent skill
 
@@ -58,6 +58,42 @@ jobs:
 
 Problems show up as annotations on the PR diff.
 
+### As an MCP server (Claude, Cursor, Codex, ChatGPT)
+
+`brandrails mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server with no extra dependencies.
+
+| Tool | What it does | Where |
+|-|-|-|
+| `extract_tokens` | Stylesheets in, DTCG `tokens.json` out | local and hosted |
+| `generate_rules` | `tokens.json` in, the six rules files out | local and hosted |
+| `check_drift` | A git diff or files in, hard-coded colours and px values out | local and hosted |
+| `generate_in_repo` | `brandrails generate` in a repository on your machine | local only |
+| `check_repo` | `brandrails check` in a repository on your machine | local only |
+
+**Claude Code plugin** (MCP server plus the skill):
+
+```bash
+claude plugin marketplace add matejholek/brandrails
+claude plugin install brandrails@brandrails
+```
+
+**Cursor, Claude Desktop, Codex** and other clients that run local servers:
+
+```json
+{ "mcpServers": { "brandrails": { "command": "npx", "args": ["-y", "brandrails", "mcp"] } } }
+```
+
+**Hosted (ChatGPT apps, Claude connectors):** these clients need a public HTTPS URL.
+
+```bash
+BRANDRAILS_MCP_TOKEN=optional-secret npx brandrails mcp --http --host 0.0.0.0 --port 8787
+# MCP endpoint: https://<your-host>/mcp   health check: /health
+```
+
+On **Vercel**, import the repository as a project; `vercel.json` and `api/mcp.ts` serve the same endpoint at `https://<project>.vercel.app/mcp`. Set `BRANDRAILS_MCP_TOKEN` in the project's environment variables to require a token.
+
+The hosted server offers only the three content tools. It holds supplied files in a temporary folder for the length of one call, never reads outside them, and keeps nothing afterwards. Requests are capped at 100 files and 2 MB.
+
 ### CLI
 
 Node 20 or newer. Run it in your project:
@@ -93,7 +129,8 @@ src/Hero.tsx:5  Hard-coded #2563ea: use `color.primary`, the closest colour toke
 - **v0.1** — React + Tailwind v4 and plain CSS readers, the rules writers, drift check
 - **v0.2** — Angular (`angular.json`, Material 3 themes), SCSS variables and maps, skill shipped as `skill/brandrails/SKILL.md`
 - **v0.3** — shadcn/ui and Lovable themes, nearest-token suggestions in `check`
-- **v0.4** — Figma variables compare, Vue and web components
+- **v0.4** — MCP server (stdio and HTTP) and Claude Code plugin
+- **v0.5** — Figma variables compare, Vue and web components
 
 ## License
 

@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { basename, dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { parseDtcg, toDtcg, type DtcgResult, type TokenGroup } from "./dtcg.js";
 import { readAngularJson } from "./read/angular.js";
 import type { CustomProperties } from "./read/blocks.js";
@@ -41,14 +41,20 @@ export interface ReadResult extends DtcgResult {
 /**
  * Reads tokens from stylesheets. An `angular.json` expands to the workspace's global styles;
  * SCSS files pull in their local `@use` / `@import` partials first. Later files win.
+ * With `within`, files outside that folder are never read (used by the hosted MCP server,
+ * where `@use "../../etc/x"` must not reach the server's own disk).
  */
-export function tokensFromFiles(files: string[]): ReadResult {
+export function tokensFromFiles(files: string[], within?: string): ReadResult {
   const props: CustomProperties = {};
   const notes = new Set<string>();
   const seen = new Set<string>();
   const readStyles = (file: string, includePaths: string[]) => {
     if (seen.has(file)) return;
     seen.add(file);
+    if (within && !isInside(within, file)) {
+      notes.add(`${basename(file)} is outside the supplied files and was not read.`);
+      return;
+    }
     const source = readFileSync(file, "utf8");
     if (/\.s[ac]ss$/.test(file)) {
       for (const dep of scssDependencies(file, source, includePaths)) readStyles(dep, includePaths);
@@ -73,6 +79,7 @@ export function tokensFromFiles(files: string[]): ReadResult {
     }
   };
   for (const file of files) {
+    if (within && !isInside(within, file)) continue;
     if (file.endsWith("angular.json")) {
       const angular = readAngularJson(file);
       for (const pkg of angular.packages) notes.add(`${pkg} is a package stylesheet and was not read.`);
@@ -80,6 +87,11 @@ export function tokensFromFiles(files: string[]): ReadResult {
     } else readStyles(file, []);
   }
   return { ...toDtcg(props), notes: [...notes] };
+}
+
+function isInside(dir: string, file: string): boolean {
+  const rel = relative(resolve(dir), resolve(file));
+  return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
 }
 
 export function renderAll(tokens: TokenGroup, read: (path: string) => string, options: RenderOptions = {}): Record<string, string> {

@@ -1,12 +1,14 @@
 import { parseArgs } from "node:util";
 import { check } from "./check/index.js";
 import { generate } from "./generate.js";
+import { serveHttp, serveStdio } from "./mcp/server.js";
 import { installSkill } from "./skill.js";
 
 const USAGE = `Usage:
   brandrails generate [--tokens tokens.json] [--from src/index.css|src/styles.scss|angular.json ...] [--root .] [--full]
   brandrails check    [--base main] [--tokens tokens.json] [--root .] [--ignore "public/**" ...]
-  brandrails skill    [--agent claude|codex|cursor] [--root .]`;
+  brandrails skill    [--agent claude|codex|cursor] [--root .]
+  brandrails mcp      [--http] [--port 8787] [--host 127.0.0.1]   (MCP server; stdio unless --http)`;
 
 export function main(argv: string[]): number {
   const [command, ...rest] = argv;
@@ -24,6 +26,9 @@ export function main(argv: string[]): number {
       full: { type: "boolean", default: false },
       ignore: { type: "string", multiple: true },
       agent: { type: "string", default: "claude" },
+      http: { type: "boolean", default: false },
+      port: { type: "string" },
+      host: { type: "string", default: "127.0.0.1" },
     },
   });
 
@@ -57,6 +62,17 @@ export function main(argv: string[]): number {
     case "skill": {
       const path = installSkill(values.root!, values.agent);
       console.log(`wrote ${path}\nRun /brandrails in your agent, or ask it to "make this repo AI-ready".`);
+      return 0;
+    }
+    case "mcp": {
+      if (!values.http) {
+        serveStdio(values.root!);
+        return 0;
+      }
+      const port = Number(values.port ?? process.env.PORT ?? 8787);
+      serveHttp({ port, host: values.host!, token: process.env.BRANDRAILS_MCP_TOKEN || undefined });
+      // stderr, so nothing but protocol messages ever reaches stdout.
+      console.error(`brandrails MCP server on http://${values.host}:${port}/mcp`);
       return 0;
     }
     default:
