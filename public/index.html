@@ -1,4 +1,97 @@
 <!doctype html>
+<html lang="en">
+<head>
+<title>Brandrails</title>
+<meta name="description" content="Keep AI coding agents on your design system: one DTCG tokens.json from your CSS, rules for Claude Code, Cursor, Copilot and Figma Make, and a drift check on every pull request.">
 <meta charset="utf-8">
-<title>Brandrails MCP</title>
-<p>Brandrails MCP server. Endpoint: <code>/mcp</code> (POST, Streamable HTTP). Docs: <a href="https://github.com/matejholek/brandrails">github.com/matejholek/brandrails</a></p>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="https://www.holisy.pro/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aleo:wght@400;700&display=swap">
+<link rel="stylesheet" href="/site.css">
+</head>
+<body>
+<div class="wrap">
+<header class="site-header">
+  <a class="brand" href="/"><svg viewBox="0 0 283.32 515.51" aria-hidden="true" fill="currentColor"><path d="M252.74,219.17l-191.54,32.28V117.79c0-16.9-13.7-30.6-30.59-30.6S0,100.89,0,117.79v164.28c.02,16.92,13.7,30.6,30.61,30.6l191.52-32.28v204.51c0,16.9,13.7,30.6,30.61,30.6s30.59-13.7,30.59-30.6v-235.11c0-16.92-13.7-30.62-30.59-30.62Z"/><ellipse cx="30.62" cy="30.4" rx="30.33" ry="30.35"/><polygon points="283.17 0 221.59 17.78 221.7 118.1 122.83 137.23 122.83 195.96 283.18 168.69 283.17 0"/><polygon points="160.54 335.73 0 363.01 0 515.51 61.54 497.73 61.66 413.6 160.54 394.47 160.54 335.73"/></svg><span>Brandrails</span></a>
+  <nav class="nav" aria-label="Main"><a href="/#use">Use it</a><a href="https://github.com/matejholek/brandrails">GitHub</a><a href="https://www.npmjs.com/package/brandrails">npm</a></nav>
+</header>
+
+<main>
+<section class="hero">
+  <p class="kicker">Free and open source · MCP server · CLI · GitHub Action</p>
+  <h1 class="display">Keep AI agents on your design system</h1>
+  <p class="lead">Brandrails turns the design decisions already in your code into one <code>tokens.json</code>, writes design rules for every AI tool your team uses, and flags hard-coded colours and spacing before they reach main.</p>
+  <div class="row">
+    <a class="btn btn--sand" href="#use">Add it to your agent</a>
+    <a class="btn" href="https://github.com/matejholek/brandrails">See the code</a>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="how">
+  <h2 id="how">How it works</h2>
+  <div class="grid grid--3">
+    <div class="card">
+      <p class="step">1</p>
+      <h3>Read</h3>
+      <p>Pulls tokens from Tailwind <code>@theme</code>, CSS variables, shadcn/ui themes, SCSS and Angular Material into one DTCG file.</p>
+    </div>
+    <div class="card">
+      <p class="step">2</p>
+      <h3>Generate</h3>
+      <p>Writes rules for <code>AGENTS.md</code>, Claude Code, Cursor, Copilot and Figma Make, small enough not to eat the context window.</p>
+    </div>
+    <div class="card">
+      <p class="step">3</p>
+      <h3>Check</h3>
+      <p>Finds <code>#3b82f6</code> and <code>p-[13px]</code> in new code and names the token to use instead.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="use" aria-labelledby="use-title">
+  <h2 id="use-title">Use it</h2>
+  <div class="grid grid--2">
+    <div class="card">
+      <h3>Claude Code plugin</h3>
+      <pre><code>claude plugin marketplace add matejholek/brandrails
+claude plugin install brandrails@brandrails</code></pre>
+      <p class="small muted">Adds the MCP server and the <code>/brandrails</code> skill.</p>
+    </div>
+    <div class="card">
+      <h3>Cursor, Codex, Claude Desktop</h3>
+      <pre><code>{ "mcpServers": { "brandrails": {
+  "command": "npx", "args": ["-y", "brandrails", "mcp"] } } }</code></pre>
+      <p class="small muted">Runs on your machine. Nothing leaves it.</p>
+    </div>
+    <div class="card">
+      <h3>ChatGPT and Claude connectors</h3>
+      <pre><code>https://brandrails.holisy.pro/mcp</code></pre>
+      <p class="small muted">Hosted, free, no account. Files are deleted after each request. <a href="/privacy">Privacy</a>.</p>
+    </div>
+    <div class="card">
+      <h3>GitHub Action</h3>
+      <pre><code>- uses: matejholek/brandrails@v1
+  with: { command: check }</code></pre>
+      <p class="small muted">Annotates design drift on every pull request.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section block" aria-labelledby="help">
+  <h2 id="help">Want your design system AI-ready?</h2>
+  <p>I set up tokens, rules and drift checks for product teams, and design the system behind them.</p>
+  <a class="btn" href="https://www.holisy.pro/book-me/">Book me</a>
+</section>
+</main>
+
+<footer class="site-footer small">
+  <p>Made by <a href="https://www.holisy.pro/">Holisy Design</a> · Matej Holek, Bratislava</p>
+  <p><a href="/privacy">Privacy</a> · <a href="https://github.com/matejholek/brandrails/blob/main/LICENSE">MIT licence</a></p>
+</footer>
+</div>
+</body>
+</html>
