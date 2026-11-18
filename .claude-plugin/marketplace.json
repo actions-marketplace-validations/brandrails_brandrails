@@ -1,0 +1,11 @@
+{
+  "name": "brandrails",
+  "owner": { "name": "Matej Holek" },
+  "plugins": [
+    {
+      "name": "brandrails",
+      "source": "./",
+      "description": "Design tokens, AI rules files and design-drift checks for your codebase."
+    }
+  ]
+}
