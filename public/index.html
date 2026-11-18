@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aleo:wght@400;700&display=swap">
 <link rel="stylesheet" href="/site.css">
 <script src="/consent.js"></script>
+<script src="/orbit.js" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -37,7 +38,17 @@
     <a class="btn" href="https://github.com/matejholek/brandrails">See the code</a>
   </div>
   </div>
-  <img class="hero__media" src="/hero.jpg" alt="Brandrails: the tagline, and the flow from tokens.json to rules files for AI tools and a pull request check" width="1000" height="640" fetchpriority="high">
+  <div class="hero__media orbit" role="img" aria-label="Brandrails at the centre of tokens.json, AGENTS.md, CLAUDE.md, Cursor, Copilot and a PR check">
+    <ul class="orbit__ring" aria-hidden="true" style="--n:6">
+      <li class="orbit__slot" style="--i:0"><span class="orbit__upright"><span class="tag tag--dark">tokens.json</span></span></li>
+      <li class="orbit__slot" style="--i:1"><span class="orbit__upright"><span class="tag">AGENTS.md</span></span></li>
+      <li class="orbit__slot" style="--i:2"><span class="orbit__upright"><span class="tag">CLAUDE.md</span></span></li>
+      <li class="orbit__slot" style="--i:3"><span class="orbit__upright"><span class="tag">Cursor</span></span></li>
+      <li class="orbit__slot" style="--i:4"><span class="orbit__upright"><span class="tag">Copilot</span></span></li>
+      <li class="orbit__slot" style="--i:5"><span class="orbit__upright"><span class="tag tag--dark">PR check</span></span></li>
+    </ul>
+    <p class="orbit__core" aria-hidden="true">Brandrails</p>
+  </div>
 </section>
 
 <section class="section" aria-labelledby="how">
