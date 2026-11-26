@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { cpSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -117,5 +117,29 @@ describe("check on a git repo", () => {
     commit(root);
     const stale = check({ root, tokens: "tokens.json", base: "main" }).map((f) => f.file);
     expect(stale).toEqual([".cursor/rules/design.mdc", "design/figma-make-guidelines.md", "design/tokens.md"]);
+  });
+
+  it("audits every tracked file with all, whatever the branch changed", () => {
+    const root = repo();
+    writeFileSync(join(root, "src/legacy.css"), ".old {\n  padding: 13px;\n}\n");
+    sh(root, "add", "-A");
+    sh(root, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "legacy");
+    sh(root, "checkout", "-q", "main");
+    sh(root, "merge", "-q", "feature");
+    expect(check({ root, tokens: "tokens.json", base: "main" })).toEqual([]);
+    expect(check({ root, tokens: "tokens.json", base: "main", all: true })).toEqual([
+      { file: "src/legacy.css", line: 2, rule: "px-spacing", message: "Hard-coded 13px: use a spacing or radius token" },
+    ]);
+  });
+
+  it("does not report the Windsurf and Gemini files as stale until they exist", () => {
+    const root = repo();
+    rmSync(join(root, "GEMINI.md"));
+    rmSync(join(root, ".windsurf"), { recursive: true });
+    commit(root);
+    expect(check({ root, tokens: "tokens.json", base: "main" })).toEqual([]);
+    writeFileSync(join(root, "GEMINI.md"), "Be brief.\n");
+    commit(root);
+    expect(check({ root, tokens: "tokens.json", base: "main" }).map((f) => f.file)).toEqual(["GEMINI.md"]);
   });
 });

@@ -14,6 +14,8 @@ Brandrails turns the design decisions already in your codebase into one `tokens.
    - `AGENTS.md` (design section) and `CLAUDE.md` (imports `@AGENTS.md`)
    - `.cursor/rules/design.mdc`
    - `.github/copilot-instructions.md`
+   - `GEMINI.md` (Gemini CLI, imports `@AGENTS.md`)
+   - `.windsurf/rules/design.md` (Windsurf, attached to UI files only)
    - Figma Make guidelines (markdown)
    - `design/tokens.md`, the full reference with values and usage notes
 
@@ -65,7 +67,7 @@ Problems show up as annotations on the PR diff.
 | Tool | What it does | Where |
 |-|-|-|
 | `extract_tokens` | Stylesheets in, DTCG `tokens.json` out | local and hosted |
-| `generate_rules` | `tokens.json` in, the six rules files out | local and hosted |
+| `generate_rules` | `tokens.json` in, the rules files out | local and hosted |
 | `check_drift` | A git diff or files in, hard-coded colours and px values out | local and hosted |
 | `generate_in_repo` | `brandrails generate` in a repository on your machine | local only |
 | `check_repo` | `brandrails check` in a repository on your machine | local only |
@@ -117,6 +119,13 @@ npx brandrails check --base main --ignore "public/**"
 ```
 
 It scans only lines added since `main` and fails on hard-coded hex, `rgb()`/`hsl()` colours and px spacing or radius (CSS declarations, Tailwind values like `p-[13px]` and Angular bindings like `[style.padding.px]`). Token definitions (`--color-x: #fff`, `$color-x: #fff`, SCSS map entries), `0px`, border widths and build output are allowed. It also fails when the rules files are out of date with `tokens.json`. Put `brandrails-ignore` in a comment on a line to allow it.
+
+Audit the whole repository instead of one branch, for example before you adopt Brandrails or to measure how much legacy styling is left:
+
+```bash
+npx brandrails check --all                  # every tracked style and component file
+npx brandrails check --all --format json    # { problemCount, byRule, findings } for scripts and dashboards
+```
 
 For a hard-coded colour close to a token, the message names it:
 

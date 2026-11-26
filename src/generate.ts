@@ -8,11 +8,12 @@ import { fromMaterialSys, readMaterialTheme } from "./read/material.js";
 import { readSassVariables, readScssVariables, scssDependencies, stripScssComments } from "./read/scss.js";
 import { readTailwindTheme } from "./read/tailwind-theme.js";
 import { writeAgentsMd } from "./write/agents-md.js";
-import { writeClaudeMd } from "./write/claude-md.js";
+import { writeClaudeMd, writeGeminiMd } from "./write/claude-md.js";
 import { writeCopilot } from "./write/copilot.js";
 import { writeCursorMdc } from "./write/cursor-mdc.js";
 import { writeFigmaMake } from "./write/figma-make.js";
 import { writeReference } from "./write/reference.js";
+import { writeWindsurf } from "./write/windsurf.js";
 import { REFERENCE_PATH, type RenderOptions } from "./write/rules.js";
 
 export interface GenerateOptions {
@@ -29,9 +30,17 @@ export const RULES_FILES = [
   "CLAUDE.md",
   ".cursor/rules/design.mdc",
   ".github/copilot-instructions.md",
+  "GEMINI.md",
+  ".windsurf/rules/design.md",
   "design/figma-make-guidelines.md",
   REFERENCE_PATH,
 ] as const;
+
+/**
+ * Targets added after 0.4. `check` only reports them as stale once they exist, so upgrading
+ * Brandrails does not fail every PR until someone runs `generate` again.
+ */
+export const OPTIONAL_RULES_FILES: ReadonlySet<string> = new Set(["GEMINI.md", ".windsurf/rules/design.md"]);
 
 export interface ReadResult extends DtcgResult {
   /** Things the reader found but could not turn into tokens, for the user to act on. */
@@ -100,6 +109,8 @@ export function renderAll(tokens: TokenGroup, read: (path: string) => string, op
     "CLAUDE.md": writeClaudeMd(read("CLAUDE.md")),
     ".cursor/rules/design.mdc": writeCursorMdc(tokens, options),
     ".github/copilot-instructions.md": writeCopilot(read(".github/copilot-instructions.md"), tokens, options),
+    "GEMINI.md": writeGeminiMd(read("GEMINI.md")),
+    ".windsurf/rules/design.md": writeWindsurf(tokens, options),
     "design/figma-make-guidelines.md": writeFigmaMake(tokens, options),
     [REFERENCE_PATH]: writeReference(tokens, options),
   };

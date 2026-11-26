@@ -5,7 +5,7 @@ export interface Finding {
   message: string;
 }
 
-const STYLE_FILE = /\.(css|scss|sass|less|html?|[cm]?[jt]sx?|vue|svelte|astro)$/;
+export const STYLE_FILE = /\.(css|scss|sass|less|html?|[cm]?[jt]sx?|vue|svelte|astro)$/;
 const IGNORE_COMMENT = /brandrails-ignore/;
 
 // Hex colours, but not URL fragments (href="#main"), entities (&#123;) or HTML text (<br>#212121).

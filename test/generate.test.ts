@@ -35,6 +35,13 @@ describe("generate", () => {
     expect(readFileSync(join(root, "AGENTS.md"), "utf8")).toMatch(/^# Agents\n\nRun tests first\.\n\n<!-- brandrails:start -->/);
   });
 
+  it("keeps a GEMINI.md that already imports AGENTS.md", () => {
+    const root = sampleProject();
+    writeFileSync(join(root, "GEMINI.md"), "@./AGENTS.md\n\nUse British spelling.\n");
+    generate({ root, tokens: "tokens.json", from: ["src/index.css"] });
+    expect(readFileSync(join(root, "GEMINI.md"), "utf8")).toBe("@./AGENTS.md\n\nUse British spelling.\n");
+  });
+
   it("explains how to start when tokens.json is missing", () => {
     expect(() => generate({ root: sampleProject(), tokens: "tokens.json" })).toThrow(/--from/);
   });
