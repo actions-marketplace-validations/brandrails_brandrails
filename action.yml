@@ -26,9 +26,9 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v5
       with:
-        node-version: 20
+        node-version: 22
     - shell: bash
       working-directory: ${{ github.action_path }}
       run: npm ci --no-audit --no-fund && npm run build

@@ -4,7 +4,7 @@
 
 Brandrails turns the design decisions already in your codebase into one `tokens.json` ([DTCG format](https://www.designtokens.org/)), generates design rules for every AI tool your team uses, and flags drift on every pull request.
 
-> Status: v0.4, early. Feedback and issues welcome. See the [changelog](CHANGELOG.md).
+> Status: v0.5, early. Feedback and issues welcome. See the [changelog](CHANGELOG.md).
 
 ## What it does
 
@@ -139,7 +139,8 @@ src/Hero.tsx:5  Hard-coded #2563ea: use `color.primary`, the closest colour toke
 - **v0.2** — Angular (`angular.json`, Material 3 themes), SCSS variables and maps, skill shipped as `skill/brandrails/SKILL.md`
 - **v0.3** — shadcn/ui and Lovable themes, nearest-token suggestions in `check`
 - **v0.4** — MCP server (stdio and HTTP) and Claude Code plugin
-- **v0.5** — Figma variables compare, Vue and web components
+- **v0.5** — Gemini CLI and Windsurf rules, `check --all` and `--format json`
+- **v0.6** — Figma variables compare, Vue and web components
 
 ## License
 
