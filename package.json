@@ -6,10 +6,10 @@
   "author": "Matej Holek",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matejholek/brandrails.git"
+    "url": "git+https://github.com/brandrails/brandrails.git"
   },
-  "homepage": "https://github.com/matejholek/brandrails#readme",
-  "bugs": "https://github.com/matejholek/brandrails/issues",
+  "homepage": "https://brandrails.holisy.pro",
+  "bugs": "https://github.com/brandrails/brandrails/issues",
   "keywords": [
     "design-tokens",
     "dtcg",
