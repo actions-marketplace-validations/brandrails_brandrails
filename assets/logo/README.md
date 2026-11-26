@@ -12,6 +12,7 @@ The Brandrails mark is built on the Holisy Design logo's rules: the Holisy "i" (
 | `brandrails-logo.svg` / `.png` | Default mark (PNG 1024 px tall, transparent) |
 | `brandrails-logo-inverted.svg` / `.png` | White mark for dark backgrounds |
 | `brandrails-mark-square.svg`, `brandrails-mark-512.png` | Square, unpadded: favicons, app icons |
-| `brandrails-avatar.png` | 1000 × 1000 on white with padding: GitHub org, social avatars |
+| `brandrails-avatar-white.svg` / `.png` | 1000 × 1000, dark mark on white with padding: GitHub org, social avatars |
+| `brandrails-avatar-black.svg` / `.png` | 1000 × 1000, white mark on `#212121` with padding: avatars on light feeds |
 
 The site favicon (`public/favicon.svg`) switches to white in dark mode.
