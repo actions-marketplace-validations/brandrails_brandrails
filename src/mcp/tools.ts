@@ -278,12 +278,13 @@ export function localTools(cwd: string): Tool[] {
       name: "check_repo",
       title: "Check a branch for design drift",
       description:
-        "Run `brandrails check` in a local git repository: scan lines added since the merge base with `base` for hard-coded colours and px values, and report rules files that are stale compared with tokens.json.",
+        "Run `brandrails check` in a local git repository: scan lines added since the merge base with `base` (or, with `all`, every tracked file) for hard-coded colours and px values, and report rules files that are stale compared with tokens.json.",
       inputSchema: {
         type: "object",
         properties: {
           root: { type: "string", description: "Repository folder. Default: the folder the server was started in." },
           base: { type: "string", description: "Branch or commit to compare against. Default main." },
+          all: { type: "boolean", description: "Audit every tracked file instead of the diff. Default false." },
           tokens: { type: "string", description: "Path to tokens.json, relative to root. Default tokens.json." },
           ignore: { type: "array", items: { type: "string" }, description: 'Extra globs to skip, e.g. ["public/**"].' },
         },
@@ -295,6 +296,7 @@ export function localTools(cwd: string): Tool[] {
           root: root(args.root),
           tokens: str(args.tokens, "tokens") ?? "tokens.json",
           base: str(args.base, "base") ?? "main",
+          all: args.all === true,
           ignore: strings(args.ignore, "ignore"),
         });
         return { text: summarise(findings), data: { findings, problemCount: findings.length } };

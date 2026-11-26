@@ -4,6 +4,10 @@
 
 ### Added
 
+- Gemini CLI and Windsurf: `generate` also writes `GEMINI.md` (imports `@AGENTS.md`, like `CLAUDE.md`) and `.windsurf/rules/design.md` (a `trigger: glob` rule that attaches only to UI files and lists token names, pointing to `design/tokens.md`). `check` reports these two as stale only once they exist, so upgrading does not fail open PRs.
+- `check --all` audits every tracked style and component file instead of the lines a branch added. The `check_repo` MCP tool takes `all` too.
+- `check --format json` prints `{ problemCount, byRule, findings }`. The text summary now counts problems per rule.
+
 - `brandrails mcp`: a Model Context Protocol server with no dependencies. Over stdio (Claude Code, Cursor, Codex, Claude Desktop) it offers `extract_tokens`, `generate_rules`, `check_drift`, `generate_in_repo` and `check_repo`. With `--http` it serves stateless Streamable HTTP at `/mcp` for ChatGPT apps and Claude connectors, offering only the three tools that take file contents, so a hosted server never touches its own disk. `BRANDRAILS_MCP_TOKEN` turns on bearer-token auth. `fetchHandler()` serves the same endpoint on serverless hosts; `vercel.json` and `api/mcp.ts` deploy it to Vercel.
 - Claude Code plugin: `.claude-plugin/plugin.json` bundles the MCP server and the skill; the repo is its own marketplace (`claude plugin marketplace add matejholek/brandrails`).
 

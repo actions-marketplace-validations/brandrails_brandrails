@@ -3,10 +3,17 @@ import { check } from "./check/index.js";
 import { generate } from "./generate.js";
 import { serveHttp, serveStdio } from "./mcp/server.js";
 import { installSkill } from "./skill.js";
+import type { Finding } from "./check/scan.js";
+
+function countByRule(findings: Finding[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const f of findings) counts[f.rule] = (counts[f.rule] ?? 0) + 1;
+  return counts;
+}
 
 const USAGE = `Usage:
   brandrails generate [--tokens tokens.json] [--from src/index.css|src/styles.scss|angular.json ...] [--root .] [--full]
-  brandrails check    [--base main] [--tokens tokens.json] [--root .] [--ignore "public/**" ...]
+  brandrails check    [--base main | --all] [--format text|json] [--tokens tokens.json] [--root .] [--ignore "public/**" ...]
   brandrails skill    [--agent claude|codex|cursor] [--root .]
   brandrails mcp      [--http] [--port 8787] [--host 127.0.0.1]   (MCP server; stdio unless --http)`;
 
@@ -24,6 +31,8 @@ export function main(argv: string[]): number {
       root: { type: "string", default: "." },
       base: { type: "string" },
       full: { type: "boolean", default: false },
+      all: { type: "boolean", default: false },
+      format: { type: "string", default: "text" },
       ignore: { type: "string", multiple: true },
       agent: { type: "string", default: "claude" },
       http: { type: "boolean", default: false },
@@ -47,7 +56,15 @@ export function main(argv: string[]): number {
       return 0;
     }
     case "check": {
-      const findings = check({ root: values.root!, tokens: values.tokens!, base: values.base || "main", ignore: values.ignore });
+      if (values.format !== "text" && values.format !== "json") {
+        console.error(`Unknown format: ${values.format} (use text or json)`);
+        return 1;
+      }
+      const findings = check({ root: values.root!, tokens: values.tokens!, base: values.base || "main", all: values.all, ignore: values.ignore });
+      if (values.format === "json") {
+        console.log(JSON.stringify({ problemCount: findings.length, byRule: countByRule(findings), findings }, null, 2));
+        return findings.length ? 1 : 0;
+      }
       const annotate = process.env.GITHUB_ACTIONS === "true";
       for (const f of findings) {
         console.log(annotate ? `::error file=${f.file},line=${f.line},title=brandrails ${f.rule}::${f.message}` : `${f.file}:${f.line}  ${f.message}`);
@@ -56,7 +73,8 @@ export function main(argv: string[]): number {
         console.log("No design drift found.");
         return 0;
       }
-      console.log(`\n${findings.length} problem${findings.length === 1 ? "" : "s"}. Add a brandrails-ignore comment on a line to allow it.`);
+      const rules = Object.entries(countByRule(findings)).map(([rule, n]) => `${rule} ${n}`).join(", ");
+      console.log(`\n${findings.length} problem${findings.length === 1 ? "" : "s"} (${rules}). Add a brandrails-ignore comment on a line to allow it.`);
       return 1;
     }
     case "skill": {
