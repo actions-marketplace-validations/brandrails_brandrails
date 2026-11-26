@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo/brandrails-logo-inverted.svg">
+  <img src="assets/logo/brandrails-logo.svg" alt="Brandrails logo" height="96">
+</picture>
+
 # Brandrails
 
 **Keep AI coding agents on your design system.**
