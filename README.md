@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - uses: matejholek/brandrails@v1
+      - uses: brandrails/brandrails@v1
         with:
           command: check
           tokens: tokens.json
@@ -75,7 +75,7 @@ Problems show up as annotations on the PR diff.
 **Claude Code plugin** (MCP server plus the skill):
 
 ```bash
-claude plugin marketplace add matejholek/brandrails
+claude plugin marketplace add brandrails/brandrails
 claude plugin install brandrails@brandrails
 ```
 
