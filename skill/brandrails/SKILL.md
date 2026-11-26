@@ -41,7 +41,7 @@ Turn the design decisions already in a codebase into one source of truth, then t
        steps:
          - uses: actions/checkout@v4
            with: { fetch-depth: 0 }
-         - uses: matejholek/brandrails@v1
+         - uses: brandrails/brandrails@v1
            with:
              command: check
    ```
